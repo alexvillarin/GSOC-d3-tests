@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<style>
+	td {
+		padding: 20px;
+	}
+	
+	table {
+		border: 4px solid black;
+		border-collapse: collapse;
+	}
+	
+	td {
+		border: 1px solid black;
+	}
+	
+</style>
+<body>
+<script src='https://d3js.org/d3.v3.min.js'></script>
+<script>
+		
+d3.tsv('data.tsv', function(error, data) {
+	if (error) 
+		throw error;
+	
+	// Creates the table, the header and the body
+	var svg = d3.select('body').append('table').attr('align', 'center'),
+		header = svg.append('thead'),
+		body = svg.append('tbody');
+	
+	// Get the number of columns and its names
+	var nameColumns = Object.keys(data[0]),
+		totalColumns = nameColumns.length;
+	
+	// Write the name of each column
+	var head = header.append('tr')
+	.style('border', '3px solid black')
+	.selectAll('td')
+	.data(nameColumns).enter()
+    .append('td')
+	.attr('align', 'center')
+	.style('font-size', '20px')
+	.style('font-weight', 'bold')
+	.html(function(d) { return d; });
+	
+	// Create a row all the rows to contain the data
+	var row = body.selectAll('tr')
+    .data(data).enter()
+    .append('tr');
+	
+	// Fills all columns for each row
+	for (var i in nameColumns)
+		row.append('td')
+		.attr('align', 'center')
+		.html(function(d) { return d[nameColumns[i]]; });
+});
+
+</script>

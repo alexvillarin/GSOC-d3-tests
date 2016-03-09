@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<style>
+	svg {
+		align: center;
+	}
+	
+	.legend {
+				font-size: 12px;
+			}
+	
+</style>
+<body>
+<script src='https://d3js.org/d3.v3.min.js'></script>
+<script>
+		
+d3.tsv('data.tsv', function(error, data) {
+	if (error) 
+		throw error;
+	
+	var speciesData = data.filter(function(elem) { return elem['species'] == 'versicolor'; });
+	var parsedData = [];
+	parsedData[0] = { group : 'sepalWidth &le; 2.5', count: speciesData.filter(function(elem) { return elem['sepalWidth'] <= 2.5; }).length }
+	parsedData[1] = { group : '2.5 &lt; sepalWidth &le; 3', count: speciesData.filter(function(elem) { return elem['sepalWidth'] > 2.5 && elem['sepalWidth'] <= 3; }).length }
+	parsedData[2] = { group : '3 &lt; sepalWidth &le; 3.5', count: speciesData.filter(function(elem) { return elem['sepalWidth'] > 3 && elem['sepalWidth'] <= 3.5; }).length }
+	parsedData[3] = { group : '3.5 &lt; sepalWidth &le; 4', count: speciesData.filter(function(elem) { return elem['sepalWidth'] > 3.5 && elem['sepalWidth'] <= 4; }).length }
+	parsedData[4] = { group : 'sepalWidth &gt; 4', count: speciesData.filter(function(elem) { return elem['sepalWidth'] > 4; }).length }
+
+	var color = d3.scale.category20(),
+		radius = 200;
+	var legendRectWidth = 30;
+	var legendRectHeight = 20;
+	var legendPadding = 40;
+	var legendLinePadding = 8;
+
+	var svg = d3.select('body')
+		.append('svg')
+		.attr('width', 4 * radius)
+		.attr('height', 2 * radius)
+		.style('margin', 'auto')
+		.style('display', 'block')
+		.style('padding', '50px')
+		.append('g')
+		.attr('transform', 'translate(' + (radius) + ',' + (radius) + ')');
+
+	var pie = d3.layout.pie()
+		.value(function(d) { return d.count; })
+		.sort(null);
+		
+	var arc = d3.svg.arc().outerRadius(radius);
+
+	var path = svg.selectAll('path')
+			.data(pie(parsedData))
+			.enter()
+			.append('path')
+			.attr('d', arc)
+			.attr('fill', function(d, i) { 
+				return color(d.data.group);
+			});		 
+				
+	var legend = svg.selectAll('.legend')
+	.data(color.domain())
+	.enter()
+	.append('g')
+	.attr('class', 'legend')
+	.attr('transform', function(d, i) {
+		var lineHeight = legendRectHeight + legendLinePadding;
+		var offset = lineHeight * parsedData.length / 2;
+		var vert = i * lineHeight - offset;
+		return 'translate(' + (radius + legendPadding) + ',' + vert + ')';
+	});
+
+	legend.append('rect')
+	.attr('width', legendRectWidth)
+	.attr('height', legendRectHeight)					 
+	.style('fill', color)
+	.style('stroke', color);							 
+			
+	legend.append('text')
+		.attr('x', legendRectWidth + legendLinePadding)
+		.attr('y', legendRectHeight / 2 + legendLinePadding / 2)
+		.attr('font-size', 2 * legendLinePadding + 'px')
+		.attr('font-family', 'Verdana, Geneva, sans-serif')
+		.html(function(d) { return d; });
+});
+
+</script>
