@@ -20,6 +20,7 @@ d3.tsv('data.tsv', function(error, data) {
 	if (error) 
 		throw error;
 	
+	// Parses the input data
 	var parsed = [{ group : 'sepalWidth &le; 2.5' },
 				  { group : '2.5 &lt; sepalWidth &le; 3' },
 				  { group : '3 &lt; sepalWidth &le; 3.5' },
@@ -27,10 +28,12 @@ d3.tsv('data.tsv', function(error, data) {
 				  { group : 'sepalWidth &gt; 4' }];
 	data.map(parseElement);
 	
+	// Get the name of the species in the data
 	var categories = Object.keys(parsed[0]),
 		current = 0;
 	categories.shift();
 
+	// Creates the dimensions and color variables
 	var color = d3.scale.category20(),
 		radius = 200;
 	var legendRectWidth = 30;
@@ -38,11 +41,13 @@ d3.tsv('data.tsv', function(error, data) {
 	var legendPadding = 40;
 	var legendLinePadding = 8;
 	
+	// Creates the header where we are storing the name of the class
 	var header = d3.select('body')
 		.append('h1')
 		.attr('align', 'center')
 		.html(categories[0].toUpperCase());
 
+	// Create the container of the chart
 	var svg = d3.select('body')
 		.append('svg')
 		.attr('width', 4 * radius)
@@ -53,6 +58,7 @@ d3.tsv('data.tsv', function(error, data) {
 		.append('g')
 		.attr('transform', 'translate(' + (radius) + ',' + (radius) + ')');
 
+	// Creates the function that set the angles size
 	var pie = d3.layout.pie()
 		.value(function(d) { return d[categories[current]] | 0; })
 		.sort(null);
@@ -68,7 +74,8 @@ d3.tsv('data.tsv', function(error, data) {
 				return color(d.data.group);
 			})
 			.each(function(d) { this._current = d; });			
-				
+
+	// Creates the legend container on the right of the chart
 	var legend = svg.selectAll('.legend')
 	.data(color.domain())
 	.enter()
@@ -81,12 +88,14 @@ d3.tsv('data.tsv', function(error, data) {
 		return 'translate(' + (radius + legendPadding) + ',' + vert + ')';
 	});
 
+	// Append the rectangle icon to the legend container
 	legend.append('rect')
 		.attr('width', legendRectWidth)
 		.attr('height', legendRectHeight)					 
 		.style('fill', color)
 		.style('stroke', color);							 
-			
+
+	// Append the name of each class of the pie
 	legend.append('text')
 		.attr('x', legendRectWidth + legendLinePadding)
 		.attr('y', legendRectHeight / 2 + legendLinePadding / 2)
@@ -94,8 +103,10 @@ d3.tsv('data.tsv', function(error, data) {
 		.attr('font-family', 'Verdana, Geneva, sans-serif')
 		.html(function(d) { return d; });	
 
+	// Function that calls to updatePie every 5 seconds
 	setInterval(updatePie, 5000);
 	
+	// Updates the pie with the next specie values
 	function updatePie() {
 		current = (current + 1) % categories.length;
 		header.html(categories[current].toUpperCase());
@@ -111,17 +122,18 @@ d3.tsv('data.tsv', function(error, data) {
 		});
 	}
 	
+	// Parses the parameter and add it to its correct class
 	function parseElement(elem) {
 		if 	(elem['sepalWidth'] <= 2.5)
-			parsed[0][elem.species] = parsed[0][elem.species] + 1 | 0;
+			parsed[0][elem.species] = parsed[0][elem.species] + 1 | 1;
 		else if (elem['sepalWidth'] > 2.5 && elem['sepalWidth'] <= 3)
-			parsed[1][elem.species] = parsed[1][elem.species] + 1 | 0;
+			parsed[1][elem.species] = parsed[1][elem.species] + 1 | 1;
 		else if (elem['sepalWidth'] > 3 && elem['sepalWidth'] <= 3.5)
-			parsed[2][elem.species] = parsed[2][elem.species] + 1 | 0;
+			parsed[2][elem.species] = parsed[2][elem.species] + 1 | 1;
 		else if (elem['sepalWidth'] > 3.5 && elem['sepalWidth'] <= 4)
-			parsed[3][elem.species] = parsed[3][elem.species] + 1 | 0;
+			parsed[3][elem.species] = parsed[3][elem.species] + 1 | 1;
 		else if (elem['sepalWidth'] > 4)
-			parsed[4][elem.species] = parsed[4][elem.species] + 1 | 0;
+			parsed[4][elem.species] = parsed[4][elem.species] + 1 | 1;
 	}
 });
 </script>

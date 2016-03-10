@@ -20,6 +20,7 @@ d3.tsv('data.tsv', function(error, data) {
 	if (error) 
 		throw error;
 	
+	// Parses the input data
 	var speciesData = data.filter(function(elem) { return elem['species'] == 'versicolor'; });
 	var parsedData = [];
 	parsedData[0] = { group : 'sepalWidth &le; 2.5', count: speciesData.filter(function(elem) { return elem['sepalWidth'] <= 2.5; }).length }
@@ -28,6 +29,7 @@ d3.tsv('data.tsv', function(error, data) {
 	parsedData[3] = { group : '3.5 &lt; sepalWidth &le; 4', count: speciesData.filter(function(elem) { return elem['sepalWidth'] > 3.5 && elem['sepalWidth'] <= 4; }).length }
 	parsedData[4] = { group : 'sepalWidth &gt; 4', count: speciesData.filter(function(elem) { return elem['sepalWidth'] > 4; }).length }
 
+	// Creates the dimensions and color variables
 	var color = d3.scale.category20(),
 		radius = 200;
 	var legendRectWidth = 30;
@@ -35,6 +37,7 @@ d3.tsv('data.tsv', function(error, data) {
 	var legendPadding = 40;
 	var legendLinePadding = 8;
 
+	// Create the container of the chart
 	var svg = d3.select('body')
 		.append('svg')
 		.attr('width', 4 * radius)
@@ -45,12 +48,14 @@ d3.tsv('data.tsv', function(error, data) {
 		.append('g')
 		.attr('transform', 'translate(' + (radius) + ',' + (radius) + ')');
 
+	// Creates the function that set the angles size
 	var pie = d3.layout.pie()
 		.value(function(d) { return d.count; })
 		.sort(null);
-		
+
 	var arc = d3.svg.arc().outerRadius(radius);
 
+	// Creates the pie chart
 	var path = svg.selectAll('path')
 			.data(pie(parsedData))
 			.enter()
@@ -59,7 +64,8 @@ d3.tsv('data.tsv', function(error, data) {
 			.attr('fill', function(d, i) { 
 				return color(d.data.group);
 			});		 
-				
+
+	// Creates the legend container on the right of the chart
 	var legend = svg.selectAll('.legend')
 	.data(color.domain())
 	.enter()
@@ -72,12 +78,14 @@ d3.tsv('data.tsv', function(error, data) {
 		return 'translate(' + (radius + legendPadding) + ',' + vert + ')';
 	});
 
+	// Append the rectangle icon to the legend container
 	legend.append('rect')
 	.attr('width', legendRectWidth)
 	.attr('height', legendRectHeight)					 
 	.style('fill', color)
 	.style('stroke', color);							 
 			
+	// Append the name of each class of the pie
 	legend.append('text')
 		.attr('x', legendRectWidth + legendLinePadding)
 		.attr('y', legendRectHeight / 2 + legendLinePadding / 2)
