@@ -1,0 +1,44 @@
+<!-- Test of Development of an HTML dynamic matrix to represent datasets with
+	 multiple dimensions by Alejandro Villarín -->
+<!DOCTYPE html>
+<meta charset='utf-8'>
+
+<link rel="stylesheet" href="css/style.css"/>
+
+<body>
+	<div style="margin-left:1%; margin-top: 3%;">
+		<select onchange="updateChart(this.value)">
+			<option value="table" selected>Test 1</option>
+			<option value="sortableTable">Test 2</option>
+			<option value="pie">Test 3</option>
+			<option value="transitionPie">Test 4</option>
+		</select> 
+	</div>
+	<div id="chart"></div>
+</body>
+
+<script src='https://d3js.org/d3.v3.min.js'></script>
+<script src='js/table.js'></script>
+<script src='js/pie.js'></script>
+
+<script>
+	function updateChart(selectedTest) {
+		var chart = document.getElementById('chart');
+		
+		// Delete previous chart
+		while (chart.firstChild)
+			chart.removeChild(chart.firstChild);
+			
+		if (selectedTest == "table")
+			tableChart('chart');
+		else if (selectedTest == "sortableTable")
+			sortableTableChart('chart');
+		else if (selectedTest == "pie")
+			pieChart('chart', 1, -1);
+		else // selectedTest == "transitionPie"
+			pieChart('chart', 0, 5000);
+	}
+	
+	// Default chart is Test 1
+	tableChart('chart');
+</script>

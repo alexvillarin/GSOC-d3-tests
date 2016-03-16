@@ -44,6 +44,7 @@ d3.tsv('data.tsv', function(error, data) {
 		.append('td')
 		// When click on header sort the table by its values
 		.on("click", function(column) {
+			console.log(header);
 			row.sort(function(a, b) { if (ascendent[column]) return a[column] < b[column]; else return a[column] > b[column]; });
 			var newOrder = !ascendent[column];
 			ascendent = {}
